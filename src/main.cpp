@@ -1,18 +1,35 @@
-#include <Arduino.h>
+#include <WiFi.h>
+#include <ESPAsyncWebServer.h>
+#include "web_page.h"
 
-// put function declarations here:
-int myFunction(int, int);
+const char *ssid = "your-ssid";
+const char *password = "your-password";
+
+AsyncWebServer server(80);
 
 void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+  Serial.begin(115200);
+
+  // Подключение к WiFi
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi...");
+  }
+
+  Serial.println("Connected to WiFi");
+
+  // Обработка запросов к корневому URL
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/html", webPage);
+  });
+
+  // Здесь вы также можете обработать другие URL, если это необходимо
+
+  // Запуск веб-сервера
+  server.begin();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+  // Ваш основной код здесь
 }
